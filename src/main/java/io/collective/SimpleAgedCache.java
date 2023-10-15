@@ -1,6 +1,8 @@
 package io.collective;
 
 import java.time.Clock;
+import java.time.Instant;
+import java.time.ZoneId;
 import java.util.HashMap;
 
 public class SimpleAgedCache {
@@ -17,7 +19,16 @@ public class SimpleAgedCache {
     }
 
     public void put(Object key, Object value, int retentionInMillis) {
-        ExpirableEntry newExpirableEntry = new ExpirableEntry(value, retentionInMillis);
+        clearCache();
+
+        //add retention time to current time and set that in entry
+        long retention;
+        if(this.cacheClock == null){
+            retention = 0;
+        } else {
+            retention = this.cacheClock.millis() + (long)retentionInMillis;
+        }
+        ExpirableEntry newExpirableEntry = new ExpirableEntry(value, retention);
         cacheMap.put(key, newExpirableEntry);
     }
 
@@ -26,6 +37,7 @@ public class SimpleAgedCache {
     }
 
     public int size() {
+        clearCache();
         return this.cacheMap.size();
     }
 
@@ -34,8 +46,23 @@ public class SimpleAgedCache {
 
         if (currentValue == null){
             return null;
-        } else{
+        } else {
             return currentValue.getValue();
+        }
+    }
+
+    public void clearCache(){
+        if(this.cacheClock == null){
+            //no clock during constructor, so perform without time based properties
+            return;
+        } else{
+            for(Object currentKey : this.cacheMap.keySet()){
+                ExpirableEntry currentEntry = this.cacheMap.get(currentKey);
+                if(this.cacheClock.millis() >= currentEntry.getTimeOfExpiry()){
+                    //current time is past expiry, so evict
+                    this.cacheMap.remove(currentKey);
+                }
+            }
         }
     }
 }

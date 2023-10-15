@@ -2,9 +2,9 @@ package io.collective;
 
 public class ExpirableEntry {
     private Object value;
-    private int timeOfExpiry;
+    private long timeOfExpiry;
 
-    public ExpirableEntry(Object value, int retention){
+    public ExpirableEntry(Object value, long retention){
         this.value = value;
         this.timeOfExpiry = retention;
     }
@@ -12,7 +12,7 @@ public class ExpirableEntry {
         return this.value;
     }
 
-    public int getTimeOfExpiry(){
+    public long getTimeOfExpiry(){
         return timeOfExpiry;
     }
 
