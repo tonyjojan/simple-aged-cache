@@ -22,11 +22,11 @@ public class SimpleAgedCache {
     }
 
     public boolean isEmpty() {
-        return false;
+        return this.cacheMap.isEmpty();
     }
 
     public int size() {
-        return 0;
+        return this.cacheMap.size();
     }
 
     public Object get(Object key) {
